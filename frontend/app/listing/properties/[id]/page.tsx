@@ -119,26 +119,56 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
             {/* Features and Amenities */}
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold mb-4">Features</h3>
-                <ul className="grid grid-cols-2 gap-4">
-                  {property.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                <h3 className="font-semibold mb-4">Property Details</h3>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <tbody className="divide-y">
+                      <tr className="divide-x">
+                        <td className="px-4 py-3 bg-gray-50 text-sm text-gray-600">Property Type</td>
+                        <td className="px-4 py-3">{property.type}</td>
+                        <td className="px-4 py-3 bg-gray-50 text-sm text-gray-600">Status</td>
+                        <td className="px-4 py-3">{property.status}</td>
+                      </tr>
+                      <tr className="divide-x">
+                        <td className="px-4 py-3 bg-gray-50 text-sm text-gray-600">Year Built</td>
+                        <td className="px-4 py-3">{property.yearBuilt || 'N/A'}</td>
+                        <td className="px-4 py-3 bg-gray-50 text-sm text-gray-600">Parking Spaces</td>
+                        <td className="px-4 py-3">{property.parkingSpaces || 'N/A'}</td>
+                      </tr>
+                      <tr className="divide-x">
+                        <td className="px-4 py-3 bg-gray-50 text-sm text-gray-600">Furnished</td>
+                        <td className="px-4 py-3">{property.furnished ? 'Yes' : 'No'}</td>
+                        <td className="px-4 py-3 bg-gray-50 text-sm text-gray-600">Total Area</td>
+                        <td className="px-4 py-3">{property.area}m²</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold mb-4">Amenities</h3>
-                <ul className="grid grid-cols-2 gap-4">
-                  {property.amenities.map((amenity, index) => (
-                    <li key={index} className="flex items-center gap-2 text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                      {amenity}
-                    </li>
-                  ))}
-                </ul>
+
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <h3 className="font-semibold mb-4">Features</h3>
+                  <ul className="space-y-2">
+                    {property.features.map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2 text-gray-600">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-4">Amenities</h3>
+                  <ul className="space-y-2">
+                    {property.amenities.map((amenity, index) => (
+                      <li key={index} className="flex items-center gap-2 text-gray-600">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                        {amenity}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 

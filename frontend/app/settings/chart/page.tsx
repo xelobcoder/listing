@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp } from "lucide-react"
+import { TrendingUp, Home, Building, MapPin, DollarSign } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
-
 import {
     Card,
     CardContent,
@@ -18,109 +17,168 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 190, fill: "var(--color-other)" },
+
+const propertyData = [
+    { type: "HOUSE", count: 275, fill: "hsl(var(--chart-1))" },
+    { type: "APARTMENT", count: 200, fill: "hsl(var(--chart-2))" },
+    { type: "CONDO", count: 187, fill: "hsl(var(--chart-3))" },
+    { type: "LAND", count: 73, fill: "hsl(var(--chart-4))" },
+    { type: "COMMERCIAL", count: 90, fill: "hsl(var(--chart-5))" },
 ]
 
 const chartConfig = {
-    visitors: {
-        label: "Visitors",
+    count: {
+        label: "Properties",
     },
-    chrome: {
-        label: "Chrome",
+    HOUSE: {
+        label: "Houses",
         color: "hsl(var(--chart-1))",
     },
-    safari: {
-        label: "Safari",
+    APARTMENT: {
+        label: "Apartments",
         color: "hsl(var(--chart-2))",
     },
-    firefox: {
-        label: "Firefox",
+    CONDO: {
+        label: "Condos",
         color: "hsl(var(--chart-3))",
     },
-    edge: {
-        label: "Edge",
+    LAND: {
+        label: "Land",
         color: "hsl(var(--chart-4))",
     },
-    other: {
-        label: "Other",
+    COMMERCIAL: {
+        label: "Commercial",
         color: "hsl(var(--chart-5))",
     },
 } satisfies ChartConfig
 
-export default function Component() {
-    const totalVisitors = React.useMemo(() => {
-        return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+export default function AdminDashboard() {
+    const totalProperties = React.useMemo(() => {
+        return propertyData.reduce((acc, curr) => acc + curr.count, 0)
     }, [])
 
     return (
-        <Card className="flex flex-col">
-            <CardHeader className="items-center pb-0">
-                <CardTitle>Pie Chart - Donut with Text</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 pb-0">
-                <ChartContainer
-                    config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
-                >
-                    <PieChart>
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent hideLabel />}
-                        />
-                        <Pie
-                            data={chartData}
-                            dataKey="visitors"
-                            nameKey="browser"
-                            innerRadius={60}
-                            strokeWidth={5}
+        <div className="container mx-auto p-4 space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {/* Summary Cards - Standardized shadcn styling */}
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
+                        <Home className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{totalProperties}</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
+                        <Building className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">245</div>
+                        <p className="text-xs text-muted-foreground">
+                            +15% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">$1.2M</div>
+                        <p className="text-xs text-muted-foreground">
+                            +12% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Locations</CardTitle>
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">15</div>
+                        <p className="text-xs text-muted-foreground">
+                            +2 new locations
+                        </p>
+                    </CardContent>
+                </Card>
+
+                {/* Property Distribution Chart */}
+                <Card className="col-span-full">
+                    <CardHeader className="pb-2">
+                        <CardTitle>Property Distribution</CardTitle>
+                        <CardDescription>Property Types Overview</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex justify-center">
+                        <ChartContainer
+                            config={chartConfig}
+                            className="aspect-square w-full max-w-3xl"
                         >
-                            <Label
-                                content={({ viewBox }) => {
-                                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                        return (
-                                            <text
-                                                x={viewBox.cx}
-                                                y={viewBox.cy}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                            >
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={viewBox.cy}
-                                                    className="fill-foreground text-3xl font-bold"
-                                                >
-                                                    {totalVisitors.toLocaleString()}
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="fill-muted-foreground"
-                                                >
-                                                    Visitors
-                                                </tspan>
-                                            </text>
-                                        )
-                                    }
-                                }}
-                            />
-                        </Pie>
-                    </PieChart>
-                </ChartContainer>
-            </CardContent>
-            <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                </div>
-                <div className="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </CardFooter>
-        </Card>
+                            <PieChart>
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={<ChartTooltipContent hideLabel />}
+                                />
+                                <Pie
+                                    data={propertyData}
+                                    dataKey="count"
+                                    nameKey="type"
+                                    innerRadius="60%"
+                                    outerRadius="80%"
+                                    paddingAngle={4}
+                                >
+                                    <Label
+                                        content={({ viewBox }) => {
+                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                return (
+                                                    <text
+                                                        x={viewBox.cx}
+                                                        y={viewBox.cy}
+                                                        textAnchor="middle"
+                                                        dominantBaseline="middle"
+                                                    >
+                                                        <tspan
+                                                            x={viewBox.cx}
+                                                            y={viewBox.cy}
+                                                            className="text-2xl font-bold"
+                                                        >
+                                                            {totalProperties}
+                                                        </tspan>
+                                                        <tspan
+                                                            x={viewBox.cx}
+                                                            y={viewBox.cy + 20}
+                                                            className="text-sm text-muted-foreground"
+                                                        >
+                                                            Total
+                                                        </tspan>
+                                                    </text>
+                                                )
+                                            }
+                                        }}
+                                    />
+                                </Pie>
+                            </PieChart>
+                        </ChartContainer>
+                    </CardContent>
+                    <CardFooter className="flex flex-col items-center gap-1">
+                        <div className="flex items-center gap-2 text-sm">
+                            <TrendingUp className="h-4 w-4" />
+                            <span className="font-medium">+15.2% monthly growth</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                            Distribution of property types in our portfolio
+                        </p>
+                    </CardFooter>
+                </Card>
+            </div>
+        </div>
     )
 }
