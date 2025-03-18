@@ -19,6 +19,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import NavigationMenuCustomUi from "@/components/customui/NavigationMenu"
+import { X } from "lucide-react"
 
 // Define a schema that mirrors your table fields
 const propertySchema = z.object({
@@ -50,9 +51,13 @@ const propertySchema = z.object({
   videoUrl: z.string().url().optional(),
   floorPlans: z.array(z.string().url()).optional(),
   agentId: z.string().uuid().nonempty('Agent ID is required'),
+  imageFiles: z.array(z.instanceof(File)).optional(),
 });
 
 export default function PropertyForm() {
+  const [imageFiles, setImageFiles] = React.useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = React.useState<string[]>([]);
+  
   const form = useForm<z.infer<typeof propertySchema>>({
     resolver: zodResolver(propertySchema),
     defaultValues: {
@@ -87,8 +92,71 @@ export default function PropertyForm() {
     },
   });
 
+  // Handle image file selection
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setImageFiles(prev => [...prev, ...newFiles]);
+      
+      // Create preview URLs
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+      
+      // Update form value
+      form.setValue('imageFiles', [...imageFiles, ...newFiles]);
+    }
+  };
+
+  // Remove an image
+  const removeImage = (index: number) => {
+    const updatedFiles = [...imageFiles];
+    const updatedPreviews = [...imagePreviews];
+    
+    // Revoke the object URL to avoid memory leaks
+    URL.revokeObjectURL(updatedPreviews[index]);
+    
+    updatedFiles.splice(index, 1);
+    updatedPreviews.splice(index, 1);
+    
+    setImageFiles(updatedFiles);
+    setImagePreviews(updatedPreviews);
+    form.setValue('imageFiles', updatedFiles);
+  };
+
+  // Clean up object URLs when component unmounts
+  React.useEffect(() => {
+    return () => {
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, []);
+
   function onSubmit(values: z.infer<typeof propertySchema>) {
-    console.log(values);
+    // Create FormData to handle file uploads
+    const formData = new FormData();
+    
+    // Add all form fields to FormData
+    Object.entries(values).forEach(([key, value]) => {
+      if (key !== 'imageFiles') {
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else if (value !== undefined && value !== null) {
+          formData.append(key, String(value));
+        }
+      }
+    });
+    
+    // Add image files
+    if (imageFiles.length > 0) {
+      imageFiles.forEach((file, index) => {
+        formData.append(`image_${index}`, file);
+      });
+    }
+    
+    console.log('Form data prepared for submission:', values);
+    console.log('Number of images:', imageFiles.length);
+    
+    // Here you would send formData to your API
+    // fetch('/api/properties', { method: 'POST', body: formData });
   }
 
   // Update the form fields to match the schema
@@ -496,6 +564,46 @@ export default function PropertyForm() {
                   {/* Media */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Media</h3>
+                    
+                    {/* Image Upload */}
+                    <div className="space-y-2">
+                      <FormLabel>Property Images</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          className="flex-1"
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Upload up to 12 images
+                        </p>
+                      </div>
+                      
+                      {/* Image Previews */}
+                      {imagePreviews.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                          {imagePreviews.map((preview, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={preview}
+                                alt={`Property image ${index + 1}`}
+                                className="h-32 w-full object-cover rounded-md"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute top-1 right-1 bg-black bg-opacity-50 rounded-full p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
                     <FormField
                       control={form.control}
                       name="imageUrls"
