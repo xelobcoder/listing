@@ -7,6 +7,7 @@ import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import NavigationMenuCustomUi from '@/components/customui/NavigationMenu';
 
 const userSchema = z.object({
   name: z.string().nonempty('Name is required'),
@@ -33,7 +34,9 @@ export default function UserForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto">
+    <div>
+<NavigationMenuCustomUi/>
+<form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto">
       {/* Name */}
       <div className="flex flex-col">
         <label htmlFor="name" className="mb-1 font-medium">
@@ -74,5 +77,6 @@ export default function UserForm() {
 
       <Button type="submit">Create User</Button>
     </form>
+    </div>
   );
 }
