@@ -34,16 +34,9 @@ export async function PUT(
 ) {
   try {
     const formData = await request.formData();
-    
-    // Extract all the property data from formData
-    // Similar to POST but for updating
-    
-    // Update property in database
     const [property] = await connection('properties')
       .where('id', params.id)
       .update({
-        // All the updated fields
-        // ...
         updated_at: new Date()
       })
       .returning('*');

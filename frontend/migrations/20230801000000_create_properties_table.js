@@ -1,6 +1,8 @@
-import { Knex } from 'knex';
-
-export async function up(knex: Knex): Promise<void> {
+/**
+ * @param {import('knex').Knex} knex
+ * @returns {Promise<void>}
+ */
+exports.up = function(knex) {
   return knex.schema.createTable('properties', (table) => {
     table.uuid('id').primary();
     table.string('title').notNullable();
@@ -39,8 +41,12 @@ export async function up(knex: Knex): Promise<void> {
     table.index('status');
     table.index('agent_id');
   });
-}
+};
 
-export async function down(knex: Knex): Promise<void> {
+/**
+ * @param {import('knex').Knex} knex
+ * @returns {Promise<void>}
+ */
+exports.down = function(knex) {
   return knex.schema.dropTable('properties');
-}
+};

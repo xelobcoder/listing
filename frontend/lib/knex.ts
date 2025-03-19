@@ -1,6 +1,6 @@
-import knexModule from 'knex';
+import knexModule, { Knex } from 'knex';
 
-const connection = knexModule({
+const knexConfig = {
   client: 'pg',
   connection: process.env.DATABASE_URL || {
     host: process.env.DB_HOST || 'localhost',
@@ -15,11 +15,16 @@ const connection = knexModule({
   },
   migrations: {
     tableName: 'knex_migrations',
-    directory: '../migrations',
+    directory: './migrations',
   },
   seeds: {
     directory: './seeds',
+  },
+  dialectOptions: {
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
   }
-});
+} as Knex.Config;
+
+const connection: Knex = knexModule(knexConfig);
 
 export default connection;
